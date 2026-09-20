@@ -1,0 +1,32 @@
+.skills-section { padding: 30px 0 70px; background: white; color: var(--ink, #141414); }
+.skills-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; }
+.skills-heading h2 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -.5px; }
+.skills-heading-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 5px; background: var(--blue, #2448e5); color: white; }
+.skills-pause { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0 6px 9px; border: 0; background: none; color: #767676; font-size: 10px; cursor: pointer; }
+.skills-pause:hover { color: var(--blue, #2448e5); }
+.skills-pause:focus-visible { outline: 2px solid var(--blue, #2448e5); outline-offset: 4px; }
+.skills-marquee { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent); }
+.skills-marquee:focus-visible { outline: 2px solid var(--blue, #2448e5); outline-offset: 5px; }
+.skills-track { display: flex; width: max-content; animation: skills-drift 54s linear infinite; }
+.skills-group { display: flex; align-items: center; gap: 43px; margin: 0; padding: 8px 43px 8px 0; list-style: none; }
+.skills-item { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 11px; color: #4c4c4c; font-size: var(--text-body); font-weight: 500; white-space: nowrap; }
+.skills-logo { display: grid; width: 37px; height: 39px; place-items: center; flex-shrink: 0; }
+.skills-next-logo { display: grid; width: 33px; height: 33px; place-items: center; border-radius: 50%; background: #151515; color: white; font-size: 22px; font-weight: 400; font-family: Arial, sans-serif; }
+.skills-ts-logo { display: flex; width: 33px; height: 33px; justify-content: flex-end; align-items: flex-end; padding: 2px 3px; border-radius: 3px; background: #3178c6; color: white; font-size: 19px; font-family: Arial, sans-serif; font-weight: 700; line-height: 1.2; }
+.skills-nest-logo { color: #df2855; font-size: 20px; font-weight: 800; font-style: italic; letter-spacing: -1px; }
+.skills-marquee:hover .skills-track, .skills-marquee:focus-within .skills-track, .skills-marquee-paused .skills-track { animation-play-state: paused; }
+@keyframes skills-drift { to { transform: translateX(-50%); } }
+@media (max-width: 760px) {
+  .skills-section { padding: 28px 0 43px; }
+  .skills-heading { margin-bottom: 20px; }
+  .skills-heading h2 { font-size: 19px; }
+  .skills-item { font-size: 13px; }
+  .skills-group { gap: 28px; padding-right: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skills-pause { display: none; }
+  .skills-marquee { mask-image: none; }
+  .skills-track { width: 100%; animation: none; }
+  .skills-group { flex-wrap: wrap; gap: 24px 30px; padding-right: 0; }
+  .skills-group[aria-hidden="true"] { display: none; }
+}

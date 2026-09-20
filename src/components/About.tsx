@@ -1,113 +1,208 @@
-import { GraduationCap, CheckCircle2 } from "lucide-react";
-import { highlightsData } from "../data/aboutData";
-import ScrollReveal from "./ScrollReveal";
+﻿import { useEffect, useRef, useState } from "react";
+import { Code2, FolderCode, GraduationCap, X } from "lucide-react";
+import { projectsData } from "../data/projectsData";
+import "./About.css";
 
-export default function About() {
+const letterLines = [
+  "Xin chào, tôi là Tân!",
+  "Tôi yêu thích việc biến một ý tưởng thành sản phẩm có thể sử dụng mỗi ngày. Với tôi, một website tốt bắt đầu từ việc hiểu người dùng, rồi chăm chút cho từng chi tiết — từ giao diện đến những dòng code phía sau.",
+  "Tôi đang học Công nghệ thông tin tại Đại học Công nghiệp Hà Nội và theo đuổi hướng Frontend & Fullstack. Các dự án thực tế là cách tôi học: tự tìm hiểu, thử nghiệm, giải quyết vấn đề và liên tục cải thiện.",
+  "Tôi muốn xây dựng những ứng dụng dễ dùng, nhanh và đáng tin cậy. Tôi cũng luôn sẵn sàng lắng nghe, học hỏi và cùng mọi người làm ra điều gì đó có ích.",
+  "Cảm ơn bạn đã ghé qua,",
+  "Minh Tân",
+];
+const totalCharacters = letterLines.join("").length;
+const typingDelay = 220;
+const characterDuration = 18;
+
+function LetterContent() {
+  const [visibleCharacters, setVisibleCharacters] = useState(() =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? totalCharacters
+      : 0,
+  );
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const startedAt = performance.now() + typingDelay;
+    let frameId: number;
+
+    const typeNextCharacters = (now: number) => {
+      const count = motionPreference.matches
+        ? totalCharacters
+        : Math.min(
+            totalCharacters,
+            Math.max(0, Math.floor((now - startedAt) / characterDuration)),
+          );
+      setVisibleCharacters(count);
+      if (count < totalCharacters)
+        frameId = requestAnimationFrame(typeNextCharacters);
+    };
+
+    frameId = requestAnimationFrame(typeNextCharacters);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  const renderLine = (text: string, index: number, className?: string) => {
+    const start = letterLines.slice(0, index).join("").length;
+    const count = Math.max(0, visibleCharacters - start);
+
+    return (
+      <p key={index} className={className}>
+        <span className="sr-only">{text}</span>
+        <span aria-hidden="true">
+          <span className="about-letter-typed">{text.slice(0, count)}</span>
+          <span className="about-letter-untyped">{text.slice(count)}</span>
+        </span>
+      </p>
+    );
+  };
 
   return (
-    <section
-      id="about"
-      className="relative min-h-screen lg:min-h-screen flex flex-col justify-start pt-20 lg:pt-28 pb-20 overflow-hidden bg-gray-950/10"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        
-        {/* Section Title */}
-        <ScrollReveal direction="up">
-          <div className="text-center mb-8 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-white mb-1">
-              Về Bản Thân Tôi
-            </h2>
-            <div className="w-12 h-1 bg-emerald-500 mx-auto rounded-full"></div>
-          </div>
-        </ScrollReveal>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          
-          {/* Bio text (Left Column) */}
-          <div className="lg:col-span-5 text-left">
-            <ScrollReveal direction="left" className="space-y-5">
-            <h3 className="text-xl sm:text-2xl font-bold text-white font-display leading-snug">
-              Web Developer trẻ tuổi đam mê kiến tạo sản phẩm số chất lượng
-            </h3>
-            
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Với định hướng trở thành Web Developer chuyên nghiệp, tôi tập trung vào việc viết mã sạch, tối ưu hiệu năng và mang lại trải nghiệm người dùng tốt nhất.
-            </p>
-
-            {/* Flat bullets list */}
-            <div className="space-y-2.5 pt-2">
-              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-300">
-                <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
-                <span>Năng lực tự học và thích nghi công nghệ mới tốt</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-300">
-                <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
-                <span>Có tinh thần trách nhiệm và làm việc nhóm hiệu quả</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-300">
-                <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
-                <span>Tư duy logic giải quyết vấn đề kỹ thuật chặt chẽ</span>
-              </div>
-            </div>
-
-            {/* Education Info Grid */}
-            <div className="mt-6 p-4 rounded-2xl bg-gray-900/30 border border-white/5 space-y-3">
-              <div className="flex items-center gap-2 text-white font-semibold text-sm">
-                <GraduationCap className="text-emerald-400 flex-shrink-0" size={18} />
-                <span className="font-display">Thông tin học vấn</span>
-              </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs text-gray-400">
-                <div>
-                  <span className="block text-gray-500 text-[10px] uppercase font-bold tracking-wider">Trường học</span>
-                  <span className="text-white font-medium">Đại học Công nghiệp Hà Nội</span>
-                </div>
-                <div>
-                  <span className="block text-gray-500 text-[10px] uppercase font-bold tracking-wider">Chuyên ngành</span>
-                  <span className="text-white font-medium">Công nghệ thông tin</span>
-                </div>
-                <div>
-                  <span className="block text-gray-500 text-[10px] uppercase font-bold tracking-wider">Năm học</span>
-                  <span className="text-white font-medium">Năm 3 (2023 - 2027)</span>
-                </div>
-                <div>
-                  <span className="block text-gray-500 text-[10px] uppercase font-bold tracking-wider">GPA tích lũy</span>
-                  <span className="text-emerald-400 font-semibold">3.2 / 4.0</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-
-          {/* Borderless Highlight List (Right Column) */}
-          <div className="lg:col-span-7">
-            <ScrollReveal direction="right" delay={200} className="space-y-6 lg:space-y-7">
-              {highlightsData.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex gap-4 text-left border-b border-white/5 pb-4 last:border-b-0 last:pb-0"
-              >
-                {/* Minimalist icon frame */}
-                <div className="p-2 bg-gray-900/50 rounded-lg border border-gray-800/80 text-gray-400 flex-shrink-0 self-start">
-                  {item.icon}
-                </div>
-                
-                <div className="space-y-1">
-                  <h4 className="text-sm sm:text-base font-bold text-white font-display">
-                    {item.title}
-                  </h4>
-                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-            </ScrollReveal>
-          </div>
-
-        </div>
-
+    <>
+      <div className="about-letter-content">
+        {letterLines.slice(0, -2).map((text, index) => renderLine(text, index))}
       </div>
+      {renderLine(letterLines[4], 4, "about-letter-signoff")}
+      {renderLine(letterLines[5], 5, "about-letter-signature")}
+    </>
+  );
+}
+
+export default function About() {
+  const letterRef = useRef<HTMLDialogElement>(null);
+  const [letterOpen, setLetterOpen] = useState(false);
+
+  useEffect(() => {
+    if (!letterOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [letterOpen]);
+
+  const openLetter = () => {
+    letterRef.current?.showModal();
+    if (letterRef.current) letterRef.current.scrollTop = 0;
+    setLetterOpen(true);
+  };
+
+  return (
+    <section id="about" className="about-section" aria-labelledby="about-title">
+      <div className="section-container">
+        <div className="about-intro">
+          <span className="about-flower" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
+          <h2 id="about-title" className="about-title">
+            About Me
+          </h2>
+          <svg className="about-spark" viewBox="0 0 100 100" aria-hidden="true">
+            <g stroke="currentColor" strokeWidth="15">
+              <path d="M50 4v92M4 50h92M17 17l66 66M17 83l66-66" />
+            </g>
+          </svg>
+          <button
+            type="button"
+            className="about-folder-button"
+            onClick={openLetter}
+            aria-label="Mở lá thư về tôi và cách tôi làm việc"
+            aria-haspopup="dialog"
+          >
+            <span className="about-folder" aria-hidden="true">
+              <span className="about-folder-back" />
+              <span className="about-folder-paper">
+                <span>hello, you.</span>
+              </span>
+              <span className="about-folder-front" />
+            </span>
+            <span className="about-folder-prompt">Click me!</span>
+          </button>
+          <p className="about-folder-hint">
+            Một chút về tôi, phía sau những dòng code.
+          </p>
+        </div>
+
+        <div className="about-details">
+          <article className="about-detail">
+            <h3>
+              <span className="about-detail-icon">
+                <GraduationCap size={21} />
+              </span>
+              Education
+            </h3>
+            <p className="about-detail-lead">Đại học Công nghiệp Hà Nội</p>
+            <p>Công nghệ thông tin · 2023 — 2027</p>
+            <p className="about-detail-note">Sinh viên 4 · GPA: 3.2 / 4.0</p>
+          </article>
+          <article className="about-detail">
+            <h3>
+              <span className="about-detail-icon">
+                <Code2 size={20} />
+              </span>
+              My Focus
+            </h3>
+            <p className="about-detail-lead">
+              Frontend & Fullstack Development
+            </p>
+            <p>
+              Giao diện chỉn chu, mã nguồn dễ bảo trì và trải nghiệm sử dụng
+              mượt mà.
+            </p>
+            <p className="about-detail-note">
+              ReactJS · Next.js · TypeScript · NestJS
+            </p>
+          </article>
+          <article className="about-detail">
+            <h3>
+              <span className="about-detail-icon">
+                <FolderCode size={20} />
+              </span>
+              Hands-on Projects
+            </h3>
+            <p className="about-detail-lead">Học bằng cách xây dựng</p>
+            <p>
+              Từ ứng dụng video ngắn, đặt phòng khách sạn đến API thương mại
+              điện tử.
+            </p>
+            <a className="about-projects-link" href="#projects">
+              Khám phá {projectsData.length} dự án của tôi{" "}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </article>
+        </div>
+      </div>
+
+      <dialog
+        ref={letterRef}
+        className="about-letter-dialog"
+        aria-labelledby="about-letter-title"
+        onClose={() => setLetterOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) letterRef.current?.close();
+        }}
+      >
+        <div className="about-letter">
+          <button
+            type="button"
+            className="about-letter-close"
+            aria-label="Đóng lá thư"
+            onClick={() => letterRef.current?.close()}
+            autoFocus
+          >
+            <X size={22} />
+          </button>
+          <span className="about-letter-eyebrow">A LITTLE NOTE FROM ME</span>
+          <h2 id="about-letter-title">My Philosophy</h2>
+          {letterOpen && <LetterContent />}
+        </div>
+      </dialog>
     </section>
   );
 }

@@ -1,167 +1,149 @@
-import { useState } from "react";
-import { ExternalLink, Code, Database, Radio } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { Github } from "./BrandIcons";
+import backendApiImage from "../assets/Backend-API.png";
+import hotelBookingImage from "../assets/hotel-booking.png";
+import shortVideoImage from "../assets/video-short.png";
 import { projectsData } from "../data/projectsData";
-import ScrollReveal from "./ScrollReveal";
+import type { Project } from "../types/project";
+import "./Projects.css";
+
+const categoryLabels: Record<Project["category"], string> = {
+  frontend: "FRONTEND DEVELOPMENT",
+  fullstack: "FULLSTACK DEVELOPMENT",
+  backend: "BACKEND DEVELOPMENT",
+};
+
+const projectPreviews = {
+  video: {
+    src: shortVideoImage,
+    alt: "Giao diện trang hồ sơ Short Video App",
+    width: 2560,
+    height: 1332,
+  },
+  hotel: {
+    src: hotelBookingImage,
+    alt: "Trang chủ ứng dụng Hotel Booking",
+    width: 2510,
+    height: 1326,
+  },
+  api: {
+    src: backendApiImage,
+    alt: "Tài liệu Swagger của E-Commerce API",
+    width: 2528,
+    height: 1324,
+  },
+};
+
+function ProjectPreview({ kind }: { kind: Project["preview"] }) {
+  return (
+    <div className={`project-preview project-preview-image project-preview-${kind}`}>
+      <img
+        {...projectPreviews[kind]}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+      />
+    </div>
+  );
+}
 
 export default function Projects() {
-  const [filter, setFilter] = useState<
-    "all" | "frontend" | "fullstack" | "backend"
-  >("all");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const total = projectsData.length;
 
-  const filteredProjects =
-    filter === "all"
-      ? projectsData
-      : projectsData.filter((p) => p.category === filter);
+  if (total === 0) return null;
+
+  function selectProject(index: number) {
+    setActiveIndex((index + total) % total);
+    setExpandedIndex(null);
+  }
 
   return (
-    <section
-      id="projects"
-      className="relative min-h-screen flex flex-col justify-start pt-20 lg:pt-28 pb-10 overflow-hidden bg-gray-950/10"
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        {/* Section Title */}
-        <ScrollReveal direction="up">
-          <div className="text-center mb-6 lg:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-white mb-1">
-              Dự Án Nổi Bật
-            </h2>
-            <div className="w-12 h-1 bg-emerald-500 mx-auto rounded-full"></div>
-          </div>
-        </ScrollReveal>
+    <section id="projects" className="projects-section" aria-labelledby="projects-heading">
+      <div className="projects-ribbon" aria-label="Problem solver, team player, fast learner, detail oriented">
+        <div className="projects-ribbon-track" aria-hidden="true">
+          {[0, 1].map((copy) => <span key={copy}>PROBLEM SOLVER <b>✦</b> TEAM PLAYER <b>✦</b> FAST LEARNER <b>✦</b> DETAIL ORIENTED <b>✦</b></span>)}
+        </div>
+      </div>
 
-        {/* Filter Buttons */}
-        <ScrollReveal direction="up" delay={100}>
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {(["all", "frontend", "fullstack", "backend"] as const).map(
-              (cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilter(cat)}
-                  className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer border bg-gray-900/60 border-gray-800 text-gray-400 hover:text-white hover:bg-gray-800"
-                  style={{
-                    backgroundColor:
-                      filter === cat ? "var(--color-emerald-500)" : "",
-                    borderColor:
-                      filter === cat ? "var(--color-emerald-400)" : "",
-                    color: filter === cat ? "white" : "",
-                  }}
-                >
-                  {cat === "all"
-                    ? "Tất cả"
-                    : cat === "frontend"
-                      ? "Frontend"
-                      : cat === "fullstack"
-                        ? "Fullstack"
-                        : "Backend"}
-                </button>
-              ),
-            )}
-          </div>
-        </ScrollReveal>
+      <div className="section-container projects-container">
+        <div className="projects-heading-wrap">
+          <span className="projects-eyebrow">A FEW THINGS I'VE BUILT</span>
+          <h2 id="projects-heading">Projects<span>.</span></h2>
+          <p>Từ những ý tưởng nhỏ đến trải nghiệm thực tế.</p>
+        </div>
 
-        {/* Projects Grid Display (3 cards parallel showcase) */}
-        {filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-6xl mx-auto items-stretch">
-            {filteredProjects.map((project, idx) => (
-              <ScrollReveal
-                key={idx}
-                direction="up"
-                delay={idx * 150}
-                className="h-full"
-              >
-                <div className="flex flex-col bg-gray-900/35 border border-white/5 rounded-2xl glass-effect glass-effect-hover p-6 shadow-xl transition-all duration-300 hover:border-emerald-500/20 hover:shadow-emerald-500/5 hover:-translate-y-1 text-left h-full">
-                  {/* Visual Mockup inside card */}
-                  <div className="relative h-40 w-full rounded-xl overflow-hidden bg-gray-950 border border-white/5 mb-5 flex-shrink-0">
-                    {project.visualMockup}
-                  </div>
+        <div
+          className="projects-carousel"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Các dự án nổi bật"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.target !== event.currentTarget) return;
+            if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+              event.preventDefault();
+              selectProject(activeIndex + (event.key === "ArrowRight" ? 1 : -1));
+            }
+          }}
+          onTouchStart={(event) => {
+            touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+          }}
+          onTouchEnd={(event) => {
+            if (!touchStart.current) return;
+            const dx = event.changedTouches[0].clientX - touchStart.current.x;
+            const dy = event.changedTouches[0].clientY - touchStart.current.y;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+              selectProject(activeIndex + (dx < 0 ? 1 : -1));
+            }
+            touchStart.current = null;
+          }}
+          onTouchCancel={() => { touchStart.current = null; }}
+        >
+          <div className="projects-stage">
+            {projectsData.map((project, index) => {
+              const offset = (index - activeIndex + total) % total;
+              const position = offset === 0 ? "active" : offset === 1 ? "next" : offset === total - 1 ? "previous" : "hidden";
+              const isActive = index === activeIndex;
+              const isExpanded = expandedIndex === index;
 
-                  {/* Project Details */}
-                  <div className="flex-grow flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/15">
-                          {project.category}
-                        </span>
-                        <div className="text-gray-500">
-                          {project.category === "frontend" ? (
-                            <Code size={14} />
-                          ) : project.category === "backend" ? (
-                            <Database size={14} />
-                          ) : (
-                            <Radio size={14} />
-                          )}
+              return (
+                <article className={`project-card project-card-${position}`} key={project.title} role="group" aria-roledescription="slide" aria-label={`${index + 1} / ${total}: ${project.title}`}>
+                  <div className="project-card-content" inert={!isActive}>
+                    <ProjectPreview kind={project.preview} />
+                    <div className="project-card-body">
+                      <div className="project-card-meta"><span>{categoryLabels[project.category]}</span><span>{String(index + 1).padStart(2, "0")}</span></div>
+                      <h3>{project.title}</h3>
+                      <p className="project-description">{project.description}</p>
+                      <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+                      <button className="project-features-toggle" type="button" aria-expanded={isExpanded} aria-controls={`project-features-${index}`} tabIndex={isActive ? 0 : -1} onClick={() => setExpandedIndex(isExpanded ? null : index)}>Điểm nổi bật <ArrowDown size={12} className={isExpanded ? "project-features-arrow-open" : ""} /></button>
+                      <div id={`project-features-${index}`} className="project-features-panel" data-open={isExpanded} aria-hidden={!isExpanded} inert={!isExpanded}>
+                        <div className="project-features-clip">
+                          <ul className="project-features">{project.features.map((feature) => <li key={feature}><Check size={13} /><span>{feature}</span></li>)}</ul>
                         </div>
                       </div>
-
-                      <h3 className="text-base sm:text-lg font-bold text-white font-display">
-                        {project.title}
-                      </h3>
-
-                      <p className="text-gray-400 text-xs sm:text-sm leading-relaxed line-clamp-3">
-                        {project.description}
-                      </p>
-
-                      <ul className="space-y-1 pt-1">
-                        {project.features.map((feature, fIdx) => (
-                          <li
-                            key={fIdx}
-                            className="text-[11px] text-gray-500 flex items-start gap-1.5"
-                          >
-                            <span className="text-emerald-500 font-bold">
-                              •
-                            </span>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="space-y-4 pt-3.5 border-t border-white/5">
-                      {/* Tech Tags */}
-                      <div className="flex flex-wrap gap-1">
-                        {project.tags.map((tag, tIdx) => (
-                          <span
-                            key={tIdx}
-                            className="text-[9px] font-medium bg-gray-950 border border-gray-800 text-gray-400 px-1.5 py-0.5 rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Links */}
-                      <div className="flex items-center gap-4 text-xs font-semibold">
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-gray-400 hover:text-white flex items-center gap-1.5 transition-colors"
-                        >
-                          <Github size={14} />
-                          Source Code
-                        </a>
-                        <a
-                          href={project.demo}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition-colors"
-                        >
-                          <ExternalLink size={14} />
-                          Live Demo
-                        </a>
+                      <div className="project-links">
+                        <a href={project.github} target="_blank" rel="noreferrer" tabIndex={isActive ? 0 : -1}><Github size={15} /> {project.category === "backend" ? "API source" : "GitHub"}<ArrowUpRight size={13} /></a>
+                        {project.demo !== project.github && <a className="project-demo" href={project.demo} target="_blank" rel="noreferrer" tabIndex={isActive ? 0 : -1}>Live demo <ArrowUpRight size={15} /></a>}
                       </div>
                     </div>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                  {!isActive && <button type="button" className="project-card-select" tabIndex={-1} aria-label={`Xem dự án ${project.title}`} onClick={() => selectProject(index)} />}
+                </article>
+              );
+            })}
           </div>
-        ) : (
-          <p className="text-gray-500 text-xs py-12 text-center">
-            Chưa có dự án nào trong mục này.
-          </p>
-        )}
+
+          <div className="projects-controls" hidden={total < 2}>
+            <button type="button" className="projects-arrow projects-arrow-previous" aria-label="Dự án trước" onClick={() => selectProject(activeIndex - 1)}><ArrowLeft size={19} /></button>
+            <div className="projects-pagination" aria-label="Chọn dự án">{projectsData.map((project, index) => <button key={project.title} type="button" className={index === activeIndex ? "projects-dot projects-dot-active" : "projects-dot"} aria-label={`Xem ${project.title}`} aria-current={index === activeIndex ? "true" : undefined} onClick={() => selectProject(index)}><span /></button>)}</div>
+            <button type="button" className="projects-arrow projects-arrow-next" aria-label="Dự án tiếp theo" onClick={() => selectProject(activeIndex + 1)}><ArrowRight size={19} /></button>
+          </div>
+          <p className="projects-announcement" role="status" aria-live="polite">Dự án {activeIndex + 1} trên {total}: {projectsData[activeIndex]?.title}</p>
+        </div>
       </div>
     </section>
   );
