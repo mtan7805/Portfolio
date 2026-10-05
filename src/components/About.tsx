@@ -139,7 +139,9 @@ export default function About() {
             </h3>
             <p className="about-detail-lead">Đại học Công nghiệp Hà Nội</p>
             <p>Công nghệ thông tin · 2023 — 2027</p>
-            <p className="about-detail-note">Sinh viên 4 · GPA: 3.2 / 4.0</p>
+            <p className="about-detail-note">
+              Sinh viên năm 4 · GPA: 3.2 / 4.0
+            </p>
           </article>
           <article className="about-detail">
             <h3>
